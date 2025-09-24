@@ -11,6 +11,6 @@ go get github.com/google/wire/cmd/wire
 
 99.概念回顾
 1. wire有两个基础概念，Provider（构造器）和Injector（注入器）。
-Provider实际上就是构造函数，我们上面InitMission就是Injector。每个注入器实际上就是一个对象的创建和初始化函数。
-在这个函数中，我们只需要告诉wire要创建什么类型的对象，这个类型的依赖，wire工具会为我们生成一个函数完成对象的创建和初始化工作。
+Provider实际上就是构造函数，我们上面InitMission就是Injector。
+Injector注入器实际上就是一个对象的创建和初始化函数。在这个函数中，我们只需要告诉wire要创建什么类型的对象，这个类型的依赖，wire工具会为我们生成一个函数完成对象的创建和初始化工作。
 

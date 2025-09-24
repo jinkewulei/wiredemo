@@ -7,12 +7,17 @@
 package bootstrap
 
 import (
+	"github.com/google/wire"
 	"wiredemo/service"
 	"wiredemo/service/hunt_error"
+	"wiredemo/service/impl"
 )
 
 // Injectors from wire.go:
 
+// -----------------------------基础用法----------------------------- //
+// 初始化mission
+// 此处通过wire初始化，对比mission_controller.NormalMission()
 // 返回值：就是我们要创建的类型，wire只知道要创建的类型是什么即可，return返回的是什么不重要
 func InitMission(name string) service.Mission {
 	player := service.NewPlayer(name)
@@ -21,9 +26,18 @@ func InitMission(name string) service.Mission {
 	return mission
 }
 
+// 之后就可以批量使用这个ProviderSet
+// 注意其中的string入参是传递给了player使用
+func InitMission2(name string) service.Mission {
+	player := service.NewPlayer(name)
+	monster := service.NewMonster()
+	mission := service.NewMission(player, monster)
+	return mission
+}
+
 // wire.go:
 
-// 错误：
+// 错误处理：provider（构造器）中出现错误的处理
 // wire遵循fail-fast的原则，错误必须被处理。如果我们的注入器不返回错误，但构造器返回错误，wire工具会报错！
 func InitHunt(name string) (hunt_error.Hunt, error) {
 	cat, err := hunt_error.NewCat(name)
@@ -33,4 +47,16 @@ func InitHunt(name string) (hunt_error.Hunt, error) {
 
 	hunt := hunt_error.NewHunt(cat)
 	return hunt, nil
+}
+
+// -----------------------------高阶用法----------------------------- //
+// ProviderSet
+// 上述用法，针对同一个provider被多处注入时，需要反复声明，因此有了简化版；集中声明
+var ProviderSet = wire.NewSet(service.NewMonster, service.NewPlayer)
+
+// Bind: 绑定接口和实现
+var ImplProvider = wire.NewSet(impl.NewUserImpl)
+
+func InitUserImpl() {
+	wire.Bind(new(impl.UserService), new(impl.UserImpl))
 }
