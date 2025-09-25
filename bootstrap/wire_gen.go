@@ -15,6 +15,11 @@ import (
 
 // Injectors from wire.go:
 
+func InitWire() (*Bootstrap, error) {
+	bootstrap := NewBootstrap()
+	return bootstrap, nil
+}
+
 // -----------------------------基础用法----------------------------- //
 // 初始化mission
 // 此处通过wire初始化，对比mission_controller.NormalMission()
@@ -37,6 +42,13 @@ func InitMission2(name string) service.Mission {
 
 // wire.go:
 
+// -----------------------------最常见用法----------------------------- //
+// 1. 声明所有的provider到ProviderSet
+// 2. InitWire, 返回Bootstrap, error是必须的（只要有provider会返回error，这里就必须要有）
+var ProviderSet = wire.NewSet(
+	NewBootstrap,
+)
+
 // 错误处理：provider（构造器）中出现错误的处理
 // wire遵循fail-fast的原则，错误必须被处理。如果我们的注入器不返回错误，但构造器返回错误，wire工具会报错！
 func InitHunt(name string) (hunt_error.Hunt, error) {
@@ -52,11 +64,13 @@ func InitHunt(name string) (hunt_error.Hunt, error) {
 // -----------------------------高阶用法----------------------------- //
 // ProviderSet
 // 上述用法，针对同一个provider被多处注入时，需要反复声明，因此有了简化版；集中声明
-var ProviderSet = wire.NewSet(service.NewMonster, service.NewPlayer)
+var ProviderSet1 = wire.NewSet(service.NewMonster, service.NewPlayer)
 
 // Bind: 绑定接口和实现
+// 多用于声明了持久层接口，再指定实现的场景
 var ImplProvider = wire.NewSet(impl.NewUserImpl)
 
-func InitUserImpl() {
-	wire.Bind(new(impl.UserService), new(impl.UserImpl))
+func InitUserImpl() impl.UserImpl {
+	wire.Bind(new(impl.UserService), new(*impl.UserImpl))
+	return impl.UserImpl{}
 }

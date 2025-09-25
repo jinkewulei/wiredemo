@@ -14,6 +14,20 @@ import (
 	"github.com/google/wire"
 )
 
+// -----------------------------最常见用法----------------------------- //
+// 1. 声明所有的provider到ProviderSet
+// 2. InitWire, 返回Bootstrap, error是必须的（只要有provider会返回error，这里就必须要有）
+var ProviderSet = wire.NewSet(
+	NewBootstrap,
+)
+
+func InitWire() (*Bootstrap, error) {
+	panic(wire.Build(ProviderSet))
+	return &Bootstrap{}, nil
+}
+
+// -----------------------------最常见用法----------------------------- //
+
 // -----------------------------基础用法----------------------------- //
 // 初始化mission
 // 此处通过wire初始化，对比mission_controller.NormalMission()
@@ -42,7 +56,7 @@ func InitHunt(name string) (hunt_error.Hunt, error) {
 // -----------------------------高阶用法----------------------------- //
 // ProviderSet
 // 上述用法，针对同一个provider被多处注入时，需要反复声明，因此有了简化版；集中声明
-var ProviderSet = wire.NewSet(
+var ProviderSet1 = wire.NewSet(
 	service.NewMonster,
 	service.NewPlayer,
 )
@@ -50,7 +64,7 @@ var ProviderSet = wire.NewSet(
 // 之后就可以批量使用这个ProviderSet
 // 注意其中的string入参是传递给了player使用
 func InitMission2(name string) service.Mission {
-	wire.Build(ProviderSet, service.NewMission)
+	wire.Build(ProviderSet1, service.NewMission)
 	return service.Mission{}
 }
 
@@ -60,8 +74,10 @@ var ImplProvider = wire.NewSet(
 	impl.NewUserImpl,
 )
 
-func InitUserImpl() {
-	wire.Bind(new(impl.UserService), new(impl.UserImpl))
+func InitUserImpl() impl.UserImpl {
+	// 第一个参数是接口类型，第二个参数是实现该接口的类型的指针。
+	wire.Bind(new(impl.UserService), new(*impl.UserImpl))
+	return impl.UserImpl{}
 }
 
 // -----------------------------高阶用法----------------------------- //

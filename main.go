@@ -1,11 +1,16 @@
 package main
 
-import "wiredemo/bootstrap"
+import (
+	"fmt"
+	"wiredemo/bootstrap"
+)
 
 func main() {
 	//service.NormalMission()
 
-	WireVersionMission()
+	//WireVersionMission()
+
+	UserController()
 }
 
 func WireVersionMission() {
@@ -14,4 +19,10 @@ func WireVersionMission() {
 
 	mission2 := bootstrap.InitMission2("Dragon")
 	mission2.Start()
+}
+
+func UserController() {
+	userImpl := bootstrap.InitUserImpl()
+	user := userImpl.GetByID(233)
+	fmt.Printf("user: %v", user)
 }

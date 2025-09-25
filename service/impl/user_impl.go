@@ -1,5 +1,7 @@
 package impl
 
+import "strconv"
+
 type UserImpl struct {
 }
 
@@ -8,5 +10,5 @@ func NewUserImpl() *UserImpl {
 }
 
 func (u *UserImpl) GetByID(id int32) User {
-	return User{}
+	return User{strconv.Itoa(int(id))}
 }
